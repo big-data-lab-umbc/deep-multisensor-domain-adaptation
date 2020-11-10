@@ -34,8 +34,7 @@ import torch
 _device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("torch.cuda.is_available:")
 print(torch.cuda.is_available())
-# print("torch.cuda.get_device_name(0):")
-# print(torch.cuda.get_device_name(0))
+
 import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
@@ -58,7 +57,6 @@ def equalRate(a, b):
 
 def loadData(prefix, filename): 
   data = np.load(prefix + filename)
-  # passive = 1
   #load common data
   latlon = data['latlon']
   iff = data['iff']
@@ -117,7 +115,6 @@ def loadData(prefix, filename):
   print('after SZA X_c: ', X_c.shape)
 
   #concanate common data
-  # X_v = np.concatenate((X_v, Latlon, Iff), axis=1)
   X_c = np.concatenate((X_c, Latlon, Iff), axis=1)
   print (X_v.shape)
   print (X_c.shape)
@@ -126,37 +123,22 @@ def loadData(prefix, filename):
   X_c = np.nan_to_num(X_c)
   return X_v, X_c, Y_v, Y_c
 
-# load the training data
-# train_file = 'train10.npz'
-# train_file = '2013_mon1.npz'
-
 train_file = '4yr_jan.npz'
 X_v, X_c, Y_v, Y_c = loadData(prefix, train_file)
-# Y = Y_v
 Y = np.concatenate((Y_v, Y_c), axis=1)
 print (X_v.shape)
-#print (Y_v.shape)
 print (X_c.shape)
-#print (Y_c.shape)
 print (Y.shape)
 
 # combine data and split latter to define ground truth for MLR
-# from sklearn.linear_model import LinearRegression
 n1=20
 n2=25
 X=np.concatenate((X_v, X_c), axis=1)
-# Y=Y_v
 print (X.shape)
-# print (Y_v)
 x_train, x_valid, y_train, y_valid = train_test_split(X, Y,
                                                     test_size=0.3,
                                                     random_state=0,
                                                     stratify=Y)
-
-# x_valid, x_test, y_valid, y_test = train_test_split(x_temp, y_temp,
-#                                                     test_size=0.5,
-#                                                     random_state=0,
-#                                                     stratify=y_temp)
 
 # feature scaling
 from sklearn.preprocessing import StandardScaler
@@ -195,14 +177,6 @@ print(y_valid.shape)
 print(y_valid_src.shape)
 print(y_valid_tgt.shape)
 
-# x_test_v = x_test[:, 0:20]
-# x_test_c = x_test[:, 20:45]
-# x_test_comm = x_test[:, 45:51]
-
-# print(x_test_v.shape)
-# print(x_test_c.shape)
-# print(x_test_comm.shape)
-
 x_train_c_pt = x_train_v
 x_valid_c_pt = x_valid_v
 
@@ -216,21 +190,6 @@ print(x_train_pt.shape)
 x_valid_pt = np.concatenate((x_valid_c_pt, x_valid_comm),axis=1)
 print(x_valid_pt.shape)
 
-# # use Logistic regression model
-# import keras
-# from sklearn.linear_model import LogisticRegression
-# clf = LogisticRegression(random_state=0, solver='lbfgs',
-#                          multi_class='multinomial').fit(x_train_pt, y_train_src)
-# y_pred = clf.predict(x_valid_pt)
-# print (clf.score(x_valid_pt, y_valid_src))
-
-# num_classes1 = NUM_LALBELS
-# y_lr_gd = keras.utils.to_categorical(y_valid_src-1, num_classes1)
-# y_lr_pred = keras.utils.to_categorical(y_pred-1, num_classes1)
-
-# from sklearn.metrics import roc_auc_score
-# roc_auc_score(y_lr_gd, y_lr_pred)
-
 def load_test_data(prefix, filename):
   data_test = np.load(prefix + filename)
 
@@ -240,11 +199,10 @@ def load_test_data(prefix, filename):
   latlon_test = data_test['latlon']
   iff_test = data_test['iff']
 
-  # if passive ==1:
   x_t_test = data_test['viirs']
   y_t_test = data_test['label']
   y_t_test = np.delete(y_t_test, 0, 1)
-  # else:
+
   x_s_test = data_test['calipso']
   y_s_test = data_test['label']
   y_s_test = np.delete(y_s_test, 1 , 1)
@@ -282,13 +240,7 @@ def load_test_data(prefix, filename):
   print('after SZA X_t_test: ', X_t_test.shape)
   print('after SZA X_s_test: ', X_s_test.shape)
 
-  # pca = decomposition.PCA(n_components=20)
-  # pca.fit(X_s_test)
-  # X_s_test = pca.transform(X_s_test)
-  # print (X_s_test.shape)
-
   #concanate common data
-  # X_t_test = np.concatenate((X_t_test, Latlon_test, Iff_test), axis=1)
   X_s_test = np.concatenate((X_s_test, Latlon_test, Iff_test), axis=1)
 
   print (X_s_test.shape)
@@ -296,44 +248,11 @@ def load_test_data(prefix, filename):
 
   X_test=np.concatenate((X_t_test, X_s_test), axis=1)
 
-  # scaler_t = StandardScaler()
-  # scaler_t.fit(X_t_test)
-  # X_t_test = scaler_t.transform(X_t_test)
-
-  # scaler_s = StandardScaler()
-  # scaler_s.fit(X_s_test)
-  # X_s_test= scaler_s.transform(X_s_test)
-
   x_test2=sc_X.transform(X_test)
-
-  # x_train_v = x_train[:, 0:20]
-  # x_train_c = x_train[:, 20:45]
-  # x_train_comm = x_train[:, 45:51]
-  # print(x_train_v.shape)
-  # print(x_train_c.shape)
-  # print(x_train_comm.shape)
-
-  # x_valid_v = x_valid[:, 0:20]
-  # x_valid_c = x_valid[:, 20:45]
-  # x_valid_comm = x_valid[:, 45:51]
-
-  # print(x_valid_v.shape)
-  # print(x_valid_c.shape)
-  # print(x_valid_comm.shape)
 
   X_t_test = x_test2[:, 0:20]
   x_test_c2 = x_test2[:, 20:45]
   x_test_comm2 = x_test2[:, 45:51]
-
-
-  # DLR imputed target domain
-  # x_test_t_pt = model_reg.predict(X_t_test)
-  # x_test_t_pt = predict(X_t_test, model_ddm)
-  # print(x_test_t_pt.shape)
-
-  # test_data_pt = prepare_test_data(X_t_test, x_test_c2)
-  # x_test_t_pt = predict(test_data_pt, model_ddm)
-  # print(x_test_t_pt.shape)
 
   x_test_t_pt = X_t_test
   print(x_test_t_pt.shape)
@@ -343,7 +262,6 @@ def load_test_data(prefix, filename):
 
   return X_s_test, Y_s_test, x_test_pt_test, Y_t_test
 
-# X_s_test, Y_s_test, x_test_pt_test, Y_t_test = load_test_data(prefix, 'test_138_day.npz')
 X_s_test, Y_s_test, x_test_pt_test, Y_t_test = load_test_data(prefix, '2017_jan_day_005.npz')
 
 # run the Correlation based DA
@@ -352,7 +270,6 @@ X_s_test, Y_s_test, x_test_pt_test, Y_t_test = load_test_data(prefix, '2017_jan_
 n_epochs = 200
 lambda_ = 0.001
 lambda_l2 = 0.05
-# NUM = 31
 DDM_NUM = 20
 NUM = 26
 DIFFERECE_COL = 5
@@ -479,24 +396,14 @@ def coral(data):
 class Deep_coral(Module):
     def __init__(self,num_classes = NUM_LALBELS):
         super(Deep_coral,self).__init__()
-        #NUM:26
+
         self.ddm = DDM(n_inputs=DDM_NUM,n_outputs=DDM_NUM+DIFFERECE_COL)
         self.feature = MLP(n_inputs=NUM+DIFFERECE_COL)
         self.central = Linear(64,32) # correlation layer
         xavier_uniform_(self.central.weight)
 
         self.fc = CLASSIFY(32, num_classes)
-        # self.fc = Linear(32,num_classes)
-        # xavier_uniform_(self.fc.weight)
 
-        #  initial layer
-        # self.init_layer = Linear(NUM+5, NUM)
-        # xavier_uniform_(self.init_layer.weight)
-        # self.act3 = Softmax(dim=1)
-        # self.fc.weight.data.normal_(0,0.005)# initialization
-
-        # temp = torch.zeros((tgt_data.shape[0], DIFFERECE_COL))
-        # tmp_data = torch.cat((tgt_data, temp), 1)
     def forward(self,src,tgt):
         src = self.feature(src)
         centr1 = self.central(src)
@@ -508,7 +415,7 @@ class Deep_coral(Module):
         combine_d = torch.cat((dmval, common_d), 1)
         tgt = self.feature(combine_d)
         centr2 = self.central(tgt)
-        # tgt = self.feature(tgt)
+
         tgt = self.fc(centr2)
         return src,tgt,dmval,centr1,centr2
 
@@ -516,11 +423,7 @@ class Deep_coral(Module):
         # output layer
         viirs_d = tgt[:, 0:20]
         common_d = tgt[:, 20:26]
-        # dmval = self.ddm(tgt)
         dmval = self.ddm(viirs_d)
-        # combine_d = torch.cat((dmval, common_d), 1)
-        # tgt = self.feature(combine_d)
-        # tgt = self.fc(tgt)
         return dmval
 
 
@@ -537,30 +440,22 @@ class DDM(Module):
         self.hidden0 = Linear(256, 256)
         xavier_uniform_(self.hidden0.weight)
         self.act0 = Sigmoid()
-        # self.act0 = ReLU()
         # input to first hidden layer
         self.hidden1 = Linear(256, 256)
         xavier_uniform_(self.hidden1.weight)
         self.act1 = Sigmoid()
-        # self.act1 = ReLU()
         # second hidden layer
         self.hidden2 = Linear(256, 128)
         xavier_uniform_(self.hidden2.weight)
         self.act2 = Sigmoid()
-        # self.act2 = ReLU()
         # third hidden layer
         self.hidden3 = Linear(128, 64)
         xavier_uniform_(self.hidden3.weight)
         self.act3 = Sigmoid()
-        # self.act3 = ReLU()
         # 4th hidden layer
         self.hidden4 = Linear(64, n_outputs)
         xavier_uniform_(self.hidden4.weight)
-        # self.act4 = Sigmoid()
-        # # third hidden layer and output
-        # self.hidden3 = Linear(64, 6)
-        # xavier_uniform_(self.hidden3.weight)
-        # self.act3 = Softmax(dim=1)
+
         self.dropout = Dropout(p=0.5)
         self.batchnorm = BatchNorm1d(256)
         self.batchnorm0 = BatchNorm1d(256)
@@ -599,11 +494,6 @@ class DDM(Module):
         # fifth hidden layer
         X = self.hidden4(X)
         X = self.batchnorm4(X)
-        # X = self.act4(X)
-        # X = self.dropout(X)
-        # # output layer
-        # X = self.hidden3(X)
-        # X = self.act3(X)
         return X
 
 # model definition n_inputs = 31
@@ -627,10 +517,6 @@ class MLP(Module):
         self.hidden2 = Linear(128, 64)
         kaiming_uniform_(self.hidden2.weight, nonlinearity='relu')
         self.act2 = ReLU()
-        # # third hidden layer and output
-        # self.hidden3 = Linear(64, 6)
-        # xavier_uniform_(self.hidden3.weight)
-        # self.act3 = Softmax(dim=1)
         self.dropout = Dropout(p=0.5)
         self.batchnorm = BatchNorm1d(128)
         self.batchnorm0 = BatchNorm1d(256)
@@ -658,10 +544,6 @@ class MLP(Module):
         X = self.hidden2(X)
         X = self.batchnorm2(X)
         X = self.act2(X)
-        # X = self.dropout(X)
-        # # output layer
-        # X = self.hidden3(X)
-        # X = self.act3(X)
         return X
 
 # classifer model definition n_inputs = 32 from the coral layer
@@ -684,11 +566,6 @@ class CLASSIFY(Module):
         # second hidden layer
         self.hidden2 = Linear(64, n_outputs)
         kaiming_uniform_(self.hidden2.weight, nonlinearity='relu')
-        # self.act2 = ReLU()
-        # # third hidden layer and output
-        # self.hidden3 = Linear(64, 6)
-        # xavier_uniform_(self.hidden3.weight)
-        # self.act3 = Softmax(dim=1)
         self.dropout = Dropout(p=0.5)
         self.batchnorm = BatchNorm1d(64)
         self.batchnorm0 = BatchNorm1d(128)
@@ -715,11 +592,6 @@ class CLASSIFY(Module):
         # third hidden layer
         X = self.hidden2(X)
         X = self.batchnorm2(X)
-        # X = self.act2(X)
-        # X = self.dropout(X)
-        # # output layer
-        # X = self.hidden3(X)
-        # X = self.act3(X)
         return X
 
 
@@ -817,20 +689,11 @@ def train_model(train_dat, valid_dat, test_dat, model, device):
               tgt_label = tgt_label.to(device)
 
             # compute the model output
-            # yhat = model(inputs)
             src_out, tgt_out, dm_out, centr1, centr2 = model(src_data, tgt_data)
 
             # calculate loss
-            # loss = criterion(yhat, targets)
-            # epoch_loss = loss
             loss_classifier = criterion(src_out, src_label)
-            # print("src_label:")
-            # print(src_label)
             loss_classifier_tgt = criterion(tgt_out, tgt_label) * 0.5
-            # equalRate(src_label.cpu(), tgt_label.cpu())
-            # print("tgt_label:")
-            # print(tgt_label)
-            # loss_coral = CORAL(src_out, tgt_out)
             loss_coral = CORAL(centr1, centr2)
 
             loss_l2 = lambda_l2 * l2loss(dm_out, src_data[:, 0:DDM_NUM+DIFFERECE_COL])
@@ -842,11 +705,9 @@ def train_model(train_dat, valid_dat, test_dat, model, device):
             epoch_loss_coral += loss_coral.item()
 
             # credit assignment
-            # sum_loss.backward()
             sum_loss.backward(retain_graph=True)
             loss_l2.backward()
             # update model weights
-            
             optimizer2.step()
             optimizer1.step()
             i = i+1
@@ -966,20 +827,16 @@ def evaluate_model_stop(valid_dl, model, device):
 def evaluate_model_src(test_dl, model, device):
     model.eval()
     predictions, actuals = list(), list()
-    # test_steps = len(test_dl)
-    # iter_test = iter(test_dl)
     for i, (src_data, src_label, tgt_data, tgt_label) in enumerate(test_dl):
     # for i in range(test_steps):
         # evaluate the model on the test set
-        # tgt_data, targets = iter_test.next()
         if torch.cuda.is_available():
           src_data = src_data.to(device)
           src_label = src_label.to(device)
 
         tgt_data = src_data
         targets = src_label
-        # temp = torch.zeros((tgt_data.shape[0], DIFFERECE_COL))
-        # tmp_data = torch.cat((tgt_data, temp), 1)
+
         with torch.no_grad():
           yhat, _, _, _, _ = model(tgt_data, tgt_data[:,0:26])
         # retrieve numpy array
@@ -999,14 +856,10 @@ def evaluate_model_src(test_dl, model, device):
     return acc
 
 # evaluate the model target
-# TODO: improve the predict function 
 def evaluate_model_tgt(test_dl, model, device):
     model.eval()
     predictions, actuals = list(), list()
-    # test_steps = len(test_dl)
-    # iter_test = iter(test_dl)
     for i, (src_data, src_label, target_data, target_label) in enumerate(test_dl):
-    # for i in range(test_steps):
         # evaluate the model on the test set
         if torch.cuda.is_available():
           target_data = target_data.to(device)
@@ -1017,8 +870,6 @@ def evaluate_model_tgt(test_dl, model, device):
         temp = torch.zeros((tgt_data.shape[0], DIFFERECE_COL))
         temp = temp.to(device)
         tmp_data = torch.cat((tgt_data, temp), 1)
-        # temp = torch.zeros((tgt_data.shape[0], DIFFERECE_COL))
-        # tmp_data = torch.cat((tgt_data, temp), 1)
         with torch.no_grad():
           _, yhat, _, _, _ = model(tmp_data, tgt_data)
         # retrieve numpy array
@@ -1036,16 +887,6 @@ def evaluate_model_tgt(test_dl, model, device):
     # calculate accuracy
     acc = accuracy_score(actuals, predictions)
     return acc
-
-# # make a class prediction for one row of data
-# def predict(row, model):
-#     # convert row to data
-#     row = Tensor([row])
-#     # make prediction
-#     yhat = model(row)
-#     # retrieve numpy array
-#     yhat = yhat.detach().numpy()
-#     return yhat
 
 # train data
 X_s = x_train_src
@@ -1065,27 +906,18 @@ Y_s_test = Y_s_test
 X_t_test = x_test_pt_test
 Y_t_test = Y_t_test
 
-
 train_dat = prepare_data(X_s, Y_s, X_t, Y_t)
 valid_dat = prepare_data(X_s_valid, Y_s_valid, X_t_valid, Y_t_valid)
 test_dat = prepare_data(X_s_test, Y_s_test, X_t_test, Y_t_test)
 
-
 model = Deep_coral(num_classes=NUM_LALBELS)
 # train the model
-# train_model(train_src, train_tgt, model)
 train_model(train_dat, valid_dat,test_dat, model, _device)
 
 # evaluate the model
-# acc = evaluate_model(test_tgt, model)
-# acc = evaluate_model(test_tgt, model)
 acc = evaluate_model_tgt(test_dat, model, _device)
 
 print('Accuracy: %.3f' % acc)
-# make a single prediction
-# row = [5.1,3.5,1.4,0.2]
-# yhat = predict(row, model)
-# print('Predicted: %s (class=%d)' % (yhat, argmax(yhat)))
 
 #plot the sum loss
 plt.figure()
@@ -1095,12 +927,6 @@ plt.title('Sum loss history')
 plt.ylabel('Sum Loss in da')
 plt.xlabel('epoch');
 plt.legend()
-
-# #plot the loss
-# plt.figure()
-# plt.plot(range(n_epochs_ddm), aggre_losses_l2_ddm)
-# plt.ylabel('L2 Loss in ddm')
-# plt.xlabel('epoch');
 
 #plot the L2 loss
 plt.figure()
@@ -1169,29 +995,13 @@ all_results = []
 def test_all(prefix, filenames, device):
   for i in range(len(filenames)):
     X_s_test, Y_s_test, X_t_test, Y_t_test = load_test_data(prefix, filenames[i])
-
-    # X_t = x_train_pt
-    # Y_t = y_train
-
-    # # X_s_test = X_s_test
-    # # Y_s_test = Y_s_test
-    # X_t_test = x_test_pt_test
-    # Y_t_test = Y_s_test
-
-
     test_dat = prepare_data(X_s_test, Y_s_test, X_t_test, Y_t_test)
-
-    # train_tgt, test_tgt = prepare_data(X_t, Y_t, X_t_test, Y_t_test)
-
-
     # evaluate the model
     acc = evaluate_model_tgt(test_dat, model, device)
     all_results.append(acc)
     print(filenames[i])
     print('test Accuracy: %.3f' % acc)
 
-
-# test_filenames = ['test_138_day.npz', 'test_142_day.npz',  'test_144_day.npz', 'test_147_day.npz', 'test_154_day.npz', 'test_155_day.npz']
 test_filenames = ['2017_jan_day_005.npz', '2017_jan_day_013.npz',  '2017_jan_day_019.npz', '2017_jan_day_024.npz', '2017_jan_day_030.npz', '2017_mon1.npz']
 test_all(prefix, test_filenames, _device)
 print("test_filenames:")
